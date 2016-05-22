@@ -1,5 +1,6 @@
 package com.unfor2.testcalc1;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +12,9 @@ public class MainActivity extends AppCompatActivity {
     TextView tvDisplay;
     String stDisplayText;
     boolean bDotFlag;
+    SharedPreferences sPref;
+
+    final String SAVED_TEXT = "saved_display";
 
 
     @Override
@@ -32,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         //tvDisplay.setText(stDisplayText);
+
+        loadDisplay();
 
 
         doDisplayText();
@@ -73,6 +79,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    protected void loadDisplay () {
+        sPref = getPreferences(MODE_PRIVATE);
+        stDisplayText = sPref.getString(SAVED_TEXT, "");
+    }
+
+    protected  void saveDisplay () {
+        sPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.putString(SAVED_TEXT, stDisplayText);
+        ed.commit();
+    }
 
     public static double eval(final String str) {
         return new Object() {
@@ -158,14 +176,16 @@ public class MainActivity extends AppCompatActivity {
 
         Double ev;
 
-        ev = 0.0;
+        //ev = 0.0;
         String stEv;
 
 
         try {
             ev = eval(stDisplayText);
 
+            saveDisplay();
             stEv = " = " + ev.toString();
+
 
         } catch (RuntimeException e){
 
